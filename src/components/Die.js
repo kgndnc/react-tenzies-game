@@ -1,14 +1,20 @@
+import './die.css'
 
 function Die(props) {
-    
-    return (
-        <div 
-            className={`box${props.isHeld ? " held-box" : ""}`}
-            onClick={() => props.clickDie(props.id)}
-        >
-            {props.value}
-        </div>
-    )
+	const elements = Array(props.value)
+		.fill(0)
+		.map((value, index) => {
+			return <span key={index} className='pip' />
+		})
+
+	return (
+		<div
+			className={`face ${props.isHeld ? ' held-box' : ''}`}
+			onClick={() => props.clickDie(props.id)}
+		>
+			{elements}
+		</div>
+	)
 }
 
 export default Die

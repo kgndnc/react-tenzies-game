@@ -1,3 +1,9 @@
+/*
+ * todo: css only die faces
+ * todo: add stopwatch
+ * todo: store hi-scores in localStorage
+ */
+
 import './App.css'
 import React from 'react'
 import Confetti from 'react-confetti'
@@ -20,7 +26,6 @@ function App() {
 		},
 	}
 
-	let subtitle = 'Subtitle'
 	const [modalIsOpen, setIsOpen] = React.useState(false)
 
 	function openModal() {
@@ -121,7 +126,7 @@ function App() {
 					onRequestClose={closeModal}
 					style={customModalStyles}
 				>
-					<h2 ref={_subtitle => (subtitle = _subtitle)}>You won!</h2>
+					<h2>You won!</h2>
 					<div>Congratulations! You have won the game.</div>
 					<button
 						id='modal--button'
