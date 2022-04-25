@@ -7,10 +7,18 @@ function Die(props) {
 			return <span key={index} className='pip' />
 		})
 
+	// marks die as selected with die's id and starts the game if it hasn't started yet (gameHasStarted)
+	const handleClick = () => {
+		props.clickDie(props.id)
+		if (!props.hasGameStarted) {
+			props.setGameStarted(true)
+		}
+	}
+
 	return (
 		<div
 			className={`face ${props.isHeld ? ' held-box' : ''}`}
-			onClick={() => props.clickDie(props.id)}
+			onClick={handleClick}
 		>
 			{elements}
 		</div>
