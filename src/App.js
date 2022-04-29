@@ -8,6 +8,7 @@ import React from 'react'
 import Confetti from 'react-confetti'
 import Die from './components/Die'
 import Modal from 'react-modal'
+import { formatTime } from './components/utils'
 
 // Bind modal appElement
 Modal.setAppElement('#root')
@@ -33,22 +34,105 @@ function App() {
 
 	// useEffect Hooks
 
+	// To get the the hiscore values from localStorage
+	// or create if it's non-existent
+	React.useEffect(() => {
+		// hi-score array
+		if (!localStorage.getItem('hiScores')) {
+			localStorage.setItem('hiScores', JSON.stringify(Array(10)))
+		}
+	}, [])
+
+	const hiScores = React.useRef(localStorage.getItem('hiScores'))
+	const hiScoreArr = JSON.parse(hiScores.current)
+	console.log('hiScoreArr:', hiScoreArr)
+	const score = React.useRef(-1)
+	const scoreText = React.useRef('')
+
 	// start the timer when game starts
 	React.useEffect(() => {
 		if (hasGameStarted) {
-			let date = new Date()
-			setTime(date.getTime())
+			setTime(new Date().getTime())
+			console.log('hasGameStarted time: ', time)
 		} else {
-			let date = new Date()
-			setTime(prevTime => date.getTime() - prevTime)
+			setTime(prevTime => {
+				console.log('prev time: ', prevTime)
+				return new Date().getTime() - prevTime
+			})
+			console.log('else hasGameStarted time: ', time)
 		}
 
 		// cleanup function
 		// return () => {}
 	}, [hasGameStarted])
 
+	score.current = time
+	scoreText.current = formatTime(time)
+
+	// // Check if it's a high score
+	// for (const [index, el] of hiScoreArr) {
+	// 	// the first value that is undefined becomes user's score
+	// 	if (!el) {
+	// 		hiScoreArr[index] = scoreText
+	// 		hiScores.current = JSON.stringify(hiScoreArr)
+	// 		localStorage.setItem('hiScores', hiScores.current)
+	// 		break
+	// 	} else if (score.current < el) {
+	// 		hiScores.current = JSON.stringify(
+	// 			hiScoreArr.splice(index, 0, scoreText.current)
+	// 		)
+	// 		localStorage.setItem('hiScores', hiScores.current)
+
+	// 		break
+	// 	}
+	// }
+
+	console.log('score, scoreText: \n', score.current, scoreText.current)
+
 	// Open modal and setGameStarted(false) when the game ends.
 	React.useEffect(() => {
+		// Check if it's a high score
+
+		for (let i = 0; i < hiScoreArr.length; i++) {
+			if (hiScoreArr[i] == null) {
+				console.log('yarrak')
+				hiScoreArr[i] = scoreText
+				hiScores.current = JSON.stringify(hiScoreArr)
+				localStorage.setItem('hiScores', hiScores.current)
+				break
+			} else if (score.current < Number(hiScoreArr[i])) {
+				console.log('31')
+				hiScores.current = JSON.stringify(
+					hiScoreArr.splice(i, 0, scoreText.current)
+				)
+				localStorage.setItem('hiScores', hiScores.current)
+
+				break
+			}
+		}
+
+		// for (const [index, el] of hiScoreArr) {
+		// 	console.log('döngü')
+		// 	console.log('index: ', index)
+		// 	console.log('el: ', el)
+		// 	// the first value that is undefined becomes user's score
+		// 	if (el == null) {
+		// 		console.log('yarrak')
+		// 		hiScoreArr[index] = scoreText
+		// 		hiScores.current = JSON.stringify(hiScoreArr)
+		// 		localStorage.setItem('hiScores', hiScores.current)
+		// 		break
+		// 	} else if (score.current < Number(el)) {
+		// 		console.log('31')
+		// 		hiScores.current = JSON.stringify(
+		// 			hiScoreArr.splice(index, 0, scoreText.current)
+		// 		)
+		// 		localStorage.setItem('hiScores', hiScores.current)
+
+		// 		break
+		// 	}
+		// }
+
 		openModal()
 		setGameStarted(false)
 	}, [tenzies])
@@ -64,6 +148,7 @@ function App() {
 		})
 	}, [])
 
+	// Checks if the all selected dies have the same value
 	React.useEffect(() => {
 		const firstValue = randomValues[0].value
 		if (randomValues.every(item => item.isHeld && item.value === firstValue)) {
@@ -94,14 +179,16 @@ function App() {
 
 		// resets the game
 		setTenzies(false)
+		score.current = -1
+		scoreText.current = ''
 		setRandomValues(allNewDice())
 	}
 
 	function allNewDice() {
 		let nums = []
 		for (let i = 0; i < 10; i++) {
-			// const rand = Math.floor(Math.random() * 6 + 1)
-			const rand = 4
+			const rand = Math.floor(Math.random() * 6 + 1)
+			// const rand = 4   //for testing
 			const tmpObj = { value: rand, isHeld: false }
 			nums.push(tmpObj)
 		}
@@ -140,34 +227,6 @@ function App() {
 		})
 	}
 
-	// utility func. to format time
-	const formatTime = time => {
-		let [hours, minutes, seconds, milliseconds] = [0, 0, 0, time]
-		console.log(hours, seconds)
-
-		// these conditonals are nested because if one step doesn't run other ones don't have to as well
-		// eg. if seconds less than 60 we don't have to check for minutes
-		if (milliseconds >= 1000) {
-			seconds += Math.floor(milliseconds / 1000)
-			milliseconds = milliseconds % 1000
-
-			if (seconds >= 60) {
-				minutes += Math.floor(seconds / 60)
-				seconds %= 60
-
-				if (minutes >= 60) {
-					hours += Math.floor(minutes / 60)
-					minutes %= 60
-				}
-			}
-		}
-
-		return hours !== 0
-			? `${hours} hour(s) : `
-			: `` +
-					`${minutes} minute(s) : ${seconds} seconds : ${milliseconds} milliseconds`
-	}
-
 	return (
 		<div className='App'>
 			{tenzies && (
@@ -178,7 +237,7 @@ function App() {
 				>
 					<h2>You won!</h2>
 					<div>Congratulations! You have won the game.</div>
-					<div>Your time: {formatTime(time)}</div>
+					<div>Your time -&gt; {scoreText.current}</div>
 					<button
 						id='modal--button'
 						className='roll-button mt-5'
