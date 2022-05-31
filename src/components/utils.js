@@ -1,7 +1,6 @@
 // utility func. to format time
 export const formatTime = time => {
 	let [hours, minutes, seconds, milliseconds] = [0, 0, 0, time]
-	console.log(hours, seconds)
 
 	// these conditonals are nested because if one step doesn't run other ones don't have to as well
 	// eg. if seconds less than 60 we don't have to check for minutes

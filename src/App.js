@@ -1,8 +1,3 @@
-/*
- * todo: add stopwatch
- * todo: store hi-scores in localStorage
- */
-
 import './App.css'
 import React from 'react'
 import Confetti from 'react-confetti'
@@ -34,105 +29,28 @@ function App() {
 
 	// useEffect Hooks
 
-	// To get the the hiscore values from localStorage
-	// or create if it's non-existent
-	React.useEffect(() => {
-		// hi-score array
-		if (!localStorage.getItem('hiScores')) {
-			localStorage.setItem('hiScores', JSON.stringify(Array(10)))
-		}
-	}, [])
-
-	const hiScores = React.useRef(localStorage.getItem('hiScores'))
-	const hiScoreArr = JSON.parse(hiScores.current)
-	console.log('hiScoreArr:', hiScoreArr)
-	const score = React.useRef(-1)
-	const scoreText = React.useRef('')
-
 	// start the timer when game starts
 	React.useEffect(() => {
 		if (hasGameStarted) {
 			setTime(new Date().getTime())
-			console.log('hasGameStarted time: ', time)
 		} else {
 			setTime(prevTime => {
-				console.log('prev time: ', prevTime)
 				return new Date().getTime() - prevTime
 			})
-			console.log('else hasGameStarted time: ', time)
 		}
 
 		// cleanup function
 		// return () => {}
 	}, [hasGameStarted])
 
+	const score = React.useRef(0)
+	const scoreText = React.useRef('')
+
 	score.current = time
 	scoreText.current = formatTime(time)
 
-	// // Check if it's a high score
-	// for (const [index, el] of hiScoreArr) {
-	// 	// the first value that is undefined becomes user's score
-	// 	if (!el) {
-	// 		hiScoreArr[index] = scoreText
-	// 		hiScores.current = JSON.stringify(hiScoreArr)
-	// 		localStorage.setItem('hiScores', hiScores.current)
-	// 		break
-	// 	} else if (score.current < el) {
-	// 		hiScores.current = JSON.stringify(
-	// 			hiScoreArr.splice(index, 0, scoreText.current)
-	// 		)
-	// 		localStorage.setItem('hiScores', hiScores.current)
-
-	// 		break
-	// 	}
-	// }
-
-	console.log('score, scoreText: \n', score.current, scoreText.current)
-
 	// Open modal and setGameStarted(false) when the game ends.
 	React.useEffect(() => {
-		// Check if it's a high score
-
-		for (let i = 0; i < hiScoreArr.length; i++) {
-			if (hiScoreArr[i] == null) {
-				console.log('yarrak')
-				hiScoreArr[i] = scoreText
-				hiScores.current = JSON.stringify(hiScoreArr)
-				localStorage.setItem('hiScores', hiScores.current)
-				break
-			} else if (score.current < Number(hiScoreArr[i])) {
-				console.log('31')
-				hiScores.current = JSON.stringify(
-					hiScoreArr.splice(i, 0, scoreText.current)
-				)
-				localStorage.setItem('hiScores', hiScores.current)
-
-				break
-			}
-		}
-
-		// for (const [index, el] of hiScoreArr) {
-		// 	console.log('döngü')
-		// 	console.log('index: ', index)
-		// 	console.log('el: ', el)
-		// 	// the first value that is undefined becomes user's score
-		// 	if (el == null) {
-		// 		console.log('yarrak')
-		// 		hiScoreArr[index] = scoreText
-		// 		hiScores.current = JSON.stringify(hiScoreArr)
-		// 		localStorage.setItem('hiScores', hiScores.current)
-		// 		break
-		// 	} else if (score.current < Number(el)) {
-		// 		console.log('31')
-		// 		hiScores.current = JSON.stringify(
-		// 			hiScoreArr.splice(index, 0, scoreText.current)
-		// 		)
-		// 		localStorage.setItem('hiScores', hiScores.current)
-
-		// 		break
-		// 	}
-		// }
-
 		openModal()
 		setGameStarted(false)
 	}, [tenzies])
