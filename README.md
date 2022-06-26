@@ -8,13 +8,14 @@ Based on his suggestions I added some new features:
 1. A modal that pops up after winning the game and contains the info about the time elapsed
    <br>
 
-#### Demonstration
+### Demonstration
 
 ![Demo](./src/demo.gif)
 
-<br>
+Click [here](https://react-tenzies-kgndnc.herokuapp.com/) to play the game yourself! 🥳
 
-#### Special Thanks 🎉
+
+### Special Thanks 🎉
 
 Lots of thanks to the people that taught me these awesome stuff and helped me solve the problems that I encounter.
 
